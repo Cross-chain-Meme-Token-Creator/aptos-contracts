@@ -3,7 +3,7 @@ name = "token"
 version = "1.0.0"
 
 [addresses]
-token = "_"
+#token = "_"
 deployer = "_"
 
 [dev-addresses]

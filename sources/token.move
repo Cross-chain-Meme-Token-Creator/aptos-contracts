@@ -49,7 +49,7 @@ module token::token {
         move_to(resource_sender, Setup { has_done: false });
     }
 
-    public fun configure(sender: &signer) acquires Capabilities, Setup {
+    public entry fun configure(sender: &signer) acquires Capabilities, Setup {
         let signer_cap =&borrow_global<Capabilities>(@token).signer_cap;
         let has_done = &mut borrow_global_mut<Setup>(@token).has_done;
 
