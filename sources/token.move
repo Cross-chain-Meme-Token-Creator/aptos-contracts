@@ -1,20 +1,14 @@
 module token::token {
     //libraries
-    use aptos_framework::managed_coin::{
-        initialize,
-        mint,
-        register
-    };
-    use std::account::{SignerCapability,create_signer_with_capability};
-    use std::signer::{address_of};
-    use aptos_framework::resource_account::{retrieve_resource_account_cap};
-    
+    use aptos_framework::managed_coin::{ Self };
+    use std::account::{ Self, SignerCapability };
+    use aptos_framework::resource_account::{ Self };
+    use std::signer;
+
     #[test_only]
-    use aptos_framework::account::{create_account_for_test};
+    use aptos_framework::account::{ create_account_for_test };
     #[test_only]
-    use aptos_framework::resource_account::{create_resource_account};
-    #[test_only]
-    use aptos_framework::coin::{balance};
+    use aptos_framework::coin::{ Self };
 
     //structs
     struct Token {}
@@ -36,8 +30,8 @@ module token::token {
     const ECONFIGURE_HAS_DONE : u64 = 1;
 
     fun init_module(resource_sender: &signer) {
-        let signer_cap = retrieve_resource_account_cap(resource_sender, @deployer);
-        initialize<Token>(
+        let signer_cap = resource_account::retrieve_resource_account_cap(resource_sender, @deployer);
+        managed_coin::initialize<Token>(
             resource_sender,
             TEMPLATE_NAME,
             TEMPLATE_SYMBOL,
@@ -53,13 +47,13 @@ module token::token {
         let signer_cap =&borrow_global<Capabilities>(@token).signer_cap;
         let has_done = &mut borrow_global_mut<Setup>(@token).has_done;
 
-        let signer = create_signer_with_capability(signer_cap);
+        let signer = account::create_signer_with_capability(signer_cap);
         
-        if (address_of(sender) != @deployer) abort ESENDER_NOT_DEPLOYER;
+        if (signer::address_of(sender) != @deployer) abort ESENDER_NOT_DEPLOYER;
         if (*has_done) abort ECONFIGURE_HAS_DONE;
 
-        register<Token>(sender);
-        mint<Token>(&signer, address_of(sender), TEMPLATE_TOTAL_SUPPLY);
+        managed_coin::register<Token>(sender);
+        managed_coin::mint<Token>(&signer, signer::address_of(sender), TEMPLATE_TOTAL_SUPPLY);
 
         *has_done = true;
     }
@@ -67,8 +61,8 @@ module token::token {
     //tests
     #[test_only]
     public entry fun set_up_test(deployer: &signer, resource_account: &signer) {
-        create_account_for_test(address_of(deployer));
-        create_resource_account(deployer, b"", b"");
+        create_account_for_test(signer::address_of(deployer));
+        resource_account::create_resource_account(deployer, b"", b"");
         init_module(resource_account);
     }
 
@@ -76,7 +70,7 @@ module token::token {
     public fun test_configure(deployer: signer, resource_account: signer) acquires Capabilities, Setup {
         set_up_test(&deployer, &resource_account);
         configure(&deployer);
-        assert!(balance<Token>(address_of(&deployer)) == TEMPLATE_TOTAL_SUPPLY, 1);
+        assert!(coin::balance<Token>(signer::address_of(&deployer)) == TEMPLATE_TOTAL_SUPPLY, 1);
     }
 
     #[test(deployer = @deployer, resource_account=@token)]
