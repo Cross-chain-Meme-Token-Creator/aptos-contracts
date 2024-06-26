@@ -25,7 +25,7 @@ module token::token_tests {
 
     #[test(deployer = @deployer, resource_account=@token)]
     #[expected_failure(abort_code = ESETUP_HAS_DONE, location = token::token)]
-    public fun test_setup_fail_due_recall_setup(deployer: &signer, resource_account: &signer) {
+    public fun test_setup_fail_due_call_setup_twice(deployer: &signer, resource_account: &signer) {
         token::initialize_for_test(deployer, resource_account);
         token::setup(deployer);
         token::setup(deployer);
