@@ -11,11 +11,11 @@ module token::token {
     }
 
     //templates
-    const TEMPLATE_NAME: vector<u8> = b"USD Tether";
+    const TEMPLATE_NAME: vector<u8> = b"UST Tether";
     const TEMPLATE_SYMBOL: vector<u8> = b"USDT";
-    const TEMPLATE_DECIMALS: u8 = 6;
+    const TEMPLATE_DECIMALS: u8 = 8;
     const TEMPLATE_TOTAL_SUPPLY: u64 = 10000000000000000;
-
+    
     //errors
     const ESENDER_NOT_DEPLOYER : u64 = 0;
     const ESETUP_HAS_DONE : u64 = 1;
